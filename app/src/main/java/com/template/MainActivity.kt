@@ -1,20 +1,21 @@
 package com.template
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Scaffold
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.template.ui.BottomBar
 import com.template.ui.DrawerScreen
 import com.template.ui.MenuScreen
 import com.template.ui.ToolBar
@@ -55,11 +56,18 @@ class MainActivity : ComponentActivity() {
                                 scaffoldState.drawerState.open()
                             }
                         })
+                    },
+                    bottomBar = {
+                        BottomBarHost(navController)
                     }
                 ) {
                     NavHost(navController = navController, startDestination = "StartScreen") {
                         composable("StartScreen") { StartScreen(navController = navController) }
-                        composable("MenuScreen") { MenuScreen(navController = navController) }
+                        composable("MenuScreen") { MenuScreen(navController = navController, counter = 1) }
+                        composable(
+                            "MenuScreen/change/{counter}",
+                            arguments = listOf(navArgument("counter") { type = NavType.IntType })
+                        ) { MenuScreen(navController = navController, counter = it.arguments?.getInt("counter")) }
                     }
                 }
             }
@@ -76,5 +84,16 @@ private fun ToolBarHost(navController: NavController, onMenuClick: () -> Unit) {
     val currentRoute = navBackStackEntry?.destination?.route
     when (currentRoute) {
         "MenuScreen" -> ToolBar(onMenuClick = onMenuClick)
+        "MenuScreen/change/{counter}" -> ToolBar(onMenuClick = onMenuClick)
+    }
+}
+
+@Composable
+private fun BottomBarHost(navController: NavController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    when (currentRoute) {
+        "MenuScreen" -> BottomBar(navController = navController)
+        "MenuScreen/change/{counter}" -> BottomBar(navController = navController)
     }
 }

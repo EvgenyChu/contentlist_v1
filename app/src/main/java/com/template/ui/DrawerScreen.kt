@@ -1,21 +1,24 @@
 package com.template.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.R
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
+
 
 @Composable
 fun DrawerScreen(navController: NavController) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -52,7 +55,16 @@ fun DrawerScreen(navController: NavController) {
                 .padding(top = 24.dp, start = 16.dp, bottom = 16.dp, end = 16.dp)
         ) {
             Button(
-                onClick = { },
+                onClick = {
+                    val sendIntent: Intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, context.packageName)
+                        type = "text/plain"
+                    }
+
+                    val shareIntent = Intent.createChooser(sendIntent, null)
+                    context.startActivity(shareIntent)
+                },
                 modifier = Modifier
                     .height(56.dp)
                     .weight(1f),
@@ -71,7 +83,11 @@ fun DrawerScreen(navController: NavController) {
                 .padding(top = 24.dp, start = 16.dp, bottom = 16.dp, end = 16.dp)
         ) {
             Button(
-                onClick = { },
+                onClick = {
+                    val intent =
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}"))
+                    context.startActivity(intent)
+                },
                 modifier = Modifier
                     .height(56.dp)
                     .weight(1f),
