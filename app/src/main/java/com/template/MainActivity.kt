@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
                 navController.addOnDestinationChangedListener { controller, destination, arguments ->
                     isLockDrawer = when (destination.route) {
                         "MenuScreen" -> false
+                        "MenuScreen/change/{counter}" -> false
                         else -> true
                     }
                     scope.launch {

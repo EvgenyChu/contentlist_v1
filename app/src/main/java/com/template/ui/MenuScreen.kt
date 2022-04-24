@@ -58,20 +58,17 @@ fun TextBox(
     var htmlPage by remember { mutableStateOf("") }
 
     LaunchedEffect(key1 = Unit) {
-        try {
             val idFile: Int =
                 context.resources.getIdentifier("page_${counter}", "raw", context.packageName)
             val fileName = context.resources.openRawResource(idFile)
             htmlPage = fileName.use {
                 BufferedReader(it.reader()).readText()
             }
-        } catch (e: Exception) {
-            htmlPage = "Страница не найдена"
-        }
     }
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .padding(bottom = 56.dp)
             .background(color = MaterialTheme.colors.onSecondary)
             .verticalScroll(rememberScrollState())
     ) {
@@ -91,6 +88,7 @@ fun TextBox(
 @Composable
 fun BottomBar(vm: MenuViewModel = viewModel(), navController: NavController) {
     val state by vm.state.collectAsState()
+    val context = LocalContext.current
     BottomAppBar(
         backgroundColor = MaterialTheme.colors.primary,
         modifier = Modifier.height(56.dp)
@@ -106,7 +104,8 @@ fun BottomBar(vm: MenuViewModel = viewModel(), navController: NavController) {
             },
             modifier = Modifier
                 .height(44.dp)
-                .weight(1f),
+                .weight(1f)
+                .padding(start = 16.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary)
         ) {
@@ -115,16 +114,21 @@ fun BottomBar(vm: MenuViewModel = viewModel(), navController: NavController) {
                 style = MaterialTheme.typography.h4
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.width(16.dp))
         Button(
             onClick = {
-                vm.updateCounterPlus()
-                navController.navigate("MenuScreen/change/${state.counter + 1}")
+                try {
+                    context.resources.openRawResource(context.resources.getIdentifier("page_${state.counter + 1}", "raw", context.packageName))
+                    vm.updateCounterPlus()
+                    navController.navigate("MenuScreen/change/${state.counter + 1}")
+                }
+                catch (e: Exception){}
                 Log.e("MenuScreen", "${state.counter}")
             },
             modifier = Modifier
                 .height(44.dp)
-                .weight(1f),
+                .weight(1f)
+                .padding(end = 16.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary)
         ) {
